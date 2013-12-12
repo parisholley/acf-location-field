@@ -331,6 +331,10 @@ class acf_field_location extends acf_field
 					var level2 = '';
 					var country = '';
 					var locality = '';
+					var postal = '';
+					var neighborhood = '';
+					var number = '';
+					var route = '';
 
 					jQuery.each(results[0].address_components, function(){
 						if(jQuery.inArray('country', this.types) > -1){
@@ -349,11 +353,27 @@ class acf_field_location extends acf_field
 						if(jQuery.inArray('locality', this.types) > -1){
 							locality = this.long_name;
 						}
+
+						if(jQuery.inArray('postal_code', this.types) > -1){
+							postal = this.long_name;
+						}
+
+						if(jQuery.inArray('neighborhood', this.types) > -1){
+							neighborhood = this.long_name;
+						}
+
+						if(jQuery.inArray('street_number', this.types) > -1){
+							number = this.long_name;
+						}
+
+						if(jQuery.inArray('route', this.types) > -1){
+							route = this.long_name;
+						}
 					});
 
 					addMarker(results[0].geometry.location,address);
 					coordinates = results[0].geometry.location.lat()+','+results[0].geometry.location.lng();
-					coordinatesAddressInput.value = address+'|'+coordinates+'|'+country+'|'+level1+'|'+level2+'|'+locality+'|'+level1full;ddAddress.innerHTML=address;
+					coordinatesAddressInput.value = [address,coordinates,country,level1,level2,locality,level1full,postal,neighborhood,number,route].join('|');ddAddress.innerHTML=address;
 					ddCoordinates.innerHTML = coordinates
 				}
 				else{
@@ -512,12 +532,16 @@ class acf_field_location extends acf_field
 		{
 			$value = array('coordinates' => $orig[1], 'address' => $orig[0] );
 
-			if(count($orig) == 7){
+			if(count($orig) == 11){
 				$value['country'] = $orig[2];
 				$value['level1'] = $orig[3];
 				$value['level2'] = $orig[4];
 				$value['locality'] = $orig[5];
 				$value['level1full'] = $orig[6];
+				$value['postal'] = $orig[7];
+				$value['neighborhood'] = $orig[8];
+				$value['number'] = $orig[9];
+				$value['route'] = $orig[10];
 			}
 
 			return $value;
@@ -526,6 +550,7 @@ class acf_field_location extends acf_field
 		{
 			return $value[1];
 		}
+				
 	}
 	
 }
@@ -535,3 +560,4 @@ class acf_field_location extends acf_field
 new acf_field_location();
 
 ?>
+
