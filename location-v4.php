@@ -343,11 +343,11 @@ class acf_field_location extends acf_field
 						}
 
 						if(jQuery.inArray('administrative_area_level_2', this.types) > -1){
-							level2 = this.short_name;
+							level2 = this.long_name;
 						}
 
 						if(jQuery.inArray('locality', this.types) > -1){
-							locality = this.short_name;
+							locality = this.long_name;
 						}
 					});
 
