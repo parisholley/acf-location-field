@@ -326,9 +326,34 @@ class acf_field_location extends acf_field
 		function locateByAddress(address){
 			geocoder.geocode({'address':address},function(results,status){
 				if(status == google.maps.GeocoderStatus.OK){
+					var level1 = '';
+					var level1full = '';
+					var level2 = '';
+					var country = '';
+					var locality = '';
+
+					jQuery.each(results[0].address_components, function(){
+						if(jQuery.inArray('country', this.types) > -1){
+							country = this.short_name;
+						}
+
+						if(jQuery.inArray('administrative_area_level_1', this.types) > -1){
+							level1 = this.short_name;
+							level1full = this.long_name;
+						}
+
+						if(jQuery.inArray('administrative_area_level_2', this.types) > -1){
+							level2 = this.short_name;
+						}
+
+						if(jQuery.inArray('locality', this.types) > -1){
+							locality = this.short_name;
+						}
+					});
+
 					addMarker(results[0].geometry.location,address);
 					coordinates = results[0].geometry.location.lat()+','+results[0].geometry.location.lng();
-					coordinatesAddressInput.value = address+'|'+coordinates;ddAddress.innerHTML=address;
+					coordinatesAddressInput.value = address+'|'+coordinates+'|'+country+'|'+level1+'|'+level2+'|'+locality+'|'+level1full;ddAddress.innerHTML=address;
 					ddCoordinates.innerHTML = coordinates
 				}
 				else{
@@ -477,24 +502,30 @@ class acf_field_location extends acf_field
 	
 
 		// format value
-		$value = explode('|', $value);
+		$orig = explode('|', $value);
 		
-
-    // check that we have a value
-    $value = array_filter( $value );
-    if ( empty ($value ) ) return '';
+	// check that we have a value
+    $filtered = array_filter( $orig );
+    if ( empty ($filtered ) ) return '';
 
 		if( $field['val'] == 'address' )
 		{
-			$value = array( 'coordinates' => $value[1], 'address' => $value[0] );
+			$value = array('coordinates' => $orig[1], 'address' => $orig[0] );
+
+			if(count($orig) == 7){
+				$value['country'] = $orig[2];
+				$value['level1'] = $orig[3];
+				$value['level2'] = $orig[4];
+				$value['locality'] = $orig[5];
+				$value['level1full'] = $orig[6];
+			}
+
+			return $value;
 		}
 		else
 		{
-			$value = $value[1];
+			return $value[1];
 		}
-	
-		return $value;
-				
 	}
 	
 }
